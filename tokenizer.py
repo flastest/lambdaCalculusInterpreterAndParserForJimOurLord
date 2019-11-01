@@ -2,7 +2,7 @@ import io
 import tokenize
 
 DELIMITERS = '()'
-OPERATORS = '.' 
+OPERATORS = '.L' 
 
 # this is stolen from Jim's code, but changed a little. Thanks, Jim!
 class ParseError(Exception):
