@@ -69,7 +69,7 @@ def prettyprint(tree):
         return str(tree)+"\n"
 
 def parseAndReport(tks):
-    ast = parseExpn(tks)
+    ast = parseAppl(tks)
     tks.checkEOF()  # Check if everything was consumed.
     print()
     print(prettyprint(ast))
