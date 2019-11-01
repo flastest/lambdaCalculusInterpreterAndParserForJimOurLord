@@ -17,7 +17,7 @@ class LexError(Exception):
 
 
 
-class tokenizer:
+class TokenStream:
     
     def __init__(self,src,filename="STDIN"):
         """
