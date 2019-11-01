@@ -209,7 +209,7 @@ class TokenStream:
     def analyze(self):
         while self.source != '':
             # CHOMP a comment
-            elif self.source[0:1] == '(*':
+            if self.source[0:1] == '(*':
                 self.chompComment()
             # CHOMP whitespace
             elif self.source[0] in ' \t\n\r':
