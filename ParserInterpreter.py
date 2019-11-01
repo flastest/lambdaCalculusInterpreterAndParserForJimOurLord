@@ -10,6 +10,7 @@ def parseExpn(tokens):
         tokens.eat(")")
         return e
     elif tokens.next() == "L":
+        tokens.eat("L")
         name=tokens.eatName()
         tokens.eat(".")
         e=parseAppl(tokens)
