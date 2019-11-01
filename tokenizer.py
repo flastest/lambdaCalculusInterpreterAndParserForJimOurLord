@@ -115,7 +115,7 @@ class TokenStream:
         isname = tk[0].isalpha() or tk[0] =='_'
         for c in tk[1:]:
             isname = isname and (c.isalnum() or c == '_')
-        return isname and (tk not in RESERVED)
+        return isname
 
     
     #
