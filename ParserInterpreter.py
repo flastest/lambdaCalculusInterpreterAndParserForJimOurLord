@@ -114,4 +114,4 @@ if __name__ == "__main__":
         loadAll(sys.argv[1:])
     else:
         print("Enter an expression to parse: ",end='')
-        parseAndReport(TokenStream(input()))
+        parseAndReport(tokenizer.TokenStream(input()))
