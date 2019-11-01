@@ -1,0 +1,17 @@
+
+digraph AbstractSyntaxTree {
+"node4291110032" [label="Lambda"];
+"node4291110032" -> "JANKY0";
+"JANKY0" [label="x" shape=box];
+"node4291110032" -> "node4291110112";
+"node4291110112" [label="App"];
+"node4291110112" -> "node4291551600";
+"node4291551600" [label="Variable"];
+"node4291551600" -> "JANKY1";
+"JANKY1" [label="x" shape=box];
+"node4291110112" -> "node4291110192";
+"node4291110192" [label="Variable"];
+"node4291110192" -> "JANKY2";
+"JANKY2" [label="y" shape=box];
+
+}
