@@ -1,4 +1,4 @@
-from sys import argv
+import sys
 import json
 import tokenizer
 
@@ -65,3 +65,53 @@ def prettyprint(tree):
         return s
     else:
         return str(tree)+"\n"
+
+def parseAndReport(tks):
+    ast = parseExpn(tks)
+    tks.checkEOF()  # Check if everything was consumed.
+    print()
+    print(prettyprint(ast))
+    print()
+    # TODO: make this work better with loadAll;
+    # this is messy not-intended-for-human-consumption output, so
+    # dumping it in stdout seems wrong, but so's a fixed file when
+    # multiple reported parses can happen
+    with open("test.gv",'w') as f:
+        f.write(treeToDOT(ast))
+    return ast # also, you forgot to do this. ast below would've been None
+
+def loadAll(files):
+    try:
+        # Load definitions from the specified source files.
+        for fname in files:
+            print("[opening "+fname+"]")
+            f = open(fname,"r")
+            src = f.read()
+            tks = TokenStream(src,filename=fname)
+            ast = parseAndReport(tks)
+    except SyntaxError as e:
+        print("Syntax error.")
+        print(e.args[0])
+        print("Bailing command-line loading.")
+    except ParseError as e:
+        print("Failed to consume all the input in the parse.")
+        print(e.args[0])
+        print("Bailing command-line loading.")
+    except LexError as e:
+        print("Bad token reached.")
+        print(e.args[0])
+        print("Bailing command-line loading.")
+
+
+#
+#  usage: 
+#    python3 NaFPL.py <file 1> ... <file n>
+#
+#      - this runs the parser against the specified .ml files
+#
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        loadAll(sys.argv[1:])
+    else:
+        print("Enter an expression to parse: ",end='')
+        parseAndReport(TokenStream(input()))
