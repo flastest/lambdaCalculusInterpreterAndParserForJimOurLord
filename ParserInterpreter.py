@@ -80,6 +80,7 @@ def parseAndReport(tks):
         f.write(treeToDOT(ast))
     return ast # also, you forgot to do this. ast below would've been None
 
+
 def loadAll(files):
     try:
         # Load definitions from the specified source files.
@@ -87,17 +88,17 @@ def loadAll(files):
             print("[opening "+fname+"]")
             f = open(fname,"r")
             src = f.read()
-            tks = TokenStream(src,filename=fname)
+            tks = tokenizer.TokenStream(src,filename=fname)
             ast = parseAndReport(tks)
-    except SyntaxError as e:
+    except tokenizer.SyntaxError as e:
         print("Syntax error.")
         print(e.args[0])
         print("Bailing command-line loading.")
-    except ParseError as e:
+    except tokenizer.ParseError as e:
         print("Failed to consume all the input in the parse.")
         print(e.args[0])
         print("Bailing command-line loading.")
-    except LexError as e:
+    except tokenizer.LexError as e:
         print("Bad token reached.")
         print(e.args[0])
         print("Bailing command-line loading.")
