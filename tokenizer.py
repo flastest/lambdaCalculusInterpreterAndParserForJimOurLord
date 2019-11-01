@@ -152,43 +152,8 @@ class TokenStream:
         token = self.chompChar()
         while self.nxt().isalnum() or self.nxt() == '_':
             token += self.chompChar()
-        self.issue(token)
-                
-    def chompString(self):
-        self.lexassert(self.nxt() == '"')
-        self.chompChar() # eat quote
-        token = ""
-        while self.nxt() != '' and self.nxt() != '"':
-            if self.nxt() == '\\':
-                self.chompChar()
-                if self.nxt() == '\n':
-                    self.chompWhitespace(True)
-                elif self.nxt() == '\\':
-                    token += self.chompChar()
-                elif self.nxt() == 'n':
-                    self.chompChar()
-                    token += '\n'
-                elif self.nxt() == 't':
-                    self.chompChar()
-                    token += '\t'
-                elif self.nxt() == '"': 
-                    self.chompChar()
-                    token += '"'
-                else:
-                    self.raiseLex("Bad string escape character")
-            elif self.nxt() == '\n':
-                self.raiseLex("End of line encountered within string")
-            elif self.nxt() == '\t':
-                self.raiseLex("Tab encountered within string")
-            else:
-                token += self.chompChar()
-
-        if self.nxt() == '':
-            self.raiseLex("EOF encountered within string")
-        else:
-            self.chompChar() # eat endquote
-            self.issue('"'+token+'"')
-
+        self.issue(token)            
+    
     def chompComment(self):
         self.lexassert(len(self.source)>1 and self.source[0:1] == '(*')
         self.chompChar() # eat (*
@@ -243,18 +208,12 @@ class TokenStream:
 
     def analyze(self):
         while self.source != '':
-            # CHOMP a string literal
-            if self.source[0] == '"':
-                self.chompString()
             # CHOMP a comment
             elif self.source[0:1] == '(*':
                 self.chompComment()
             # CHOMP whitespace
             elif self.source[0] in ' \t\n\r':
                 self.chompWhitespace()
-            # CHOMP an integer literal
-            elif self.source[0].isdigit():
-                self.chompInt()
             # CHOMP a single "delimiter" character
             elif self.source[0] in DELIMITERS:
                 self.issue(self.chompChar())
