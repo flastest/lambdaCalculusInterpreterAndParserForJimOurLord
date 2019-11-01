@@ -4,9 +4,21 @@ import tokenize
 DELIMITERS = '()'
 OPERATORS = '.' 
 
-class TokenStream:
-    
+# this is stolen from Jim's code, but changed a little. Thanks, Jim!
+class ParseError(Exception):
+    pass
 
+class SyntaxError(Exception):
+    pass
+
+class LexError(Exception):
+    pass
+
+
+
+
+class tokenize:
+    
     def __init__(self,src,filename="STDIN"):
         """
         Builds a new TokenStream object from a source code string.
