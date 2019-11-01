@@ -20,7 +20,7 @@ def parseExpn(tokens):
 
 def parseAppl(tokens):
     e=parseExpn(tokens)
-    while tokens.next() not in (")","eof"):
+    while tokens.next() not in (")","eof",""):
         e=["App",e,parseExpn(tokens)]
     return e
         
