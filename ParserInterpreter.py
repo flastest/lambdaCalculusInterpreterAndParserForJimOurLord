@@ -144,14 +144,12 @@ def betaReduce(ast):
 # retuns the reduced ast
 def betaReduceLoop(ast):
     # should check to make sure it isn't beta reducible also!
-
-
-    if len(ast) > 1:
-        newAst = betaReduce(ast)
-        betaReduceLoop(newAst)
-    else: 
+    newAst = betaReduce(ast)
+    if (ast) == newAst:
+        # everything is done. I can die happy now (maybe)
         return ast
-
+    betaReduceLoop(newAst)
+    
 # Renames a specific variable in the current part of the tree. Basically, only
 # renames the variables in the current lambda to some weird ass name that won't
 # be repeated, ever, probably.
