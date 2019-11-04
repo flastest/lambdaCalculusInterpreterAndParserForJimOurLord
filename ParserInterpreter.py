@@ -22,7 +22,6 @@ def parseExpn(tokens):
 def parseAppl(tokens):
     e=parseExpn(tokens)
     x = tokens.next()
-    print(x)
     while x not in (")","eof",""):
         time.sleep(3)
         e=["App",e,parseExpn(tokens)]
