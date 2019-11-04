@@ -2,6 +2,7 @@ import sys
 import json
 import tokenizer
 import re
+import time
 
 def parseExpn(tokens):
     if tokens.next() == "(":
@@ -20,8 +21,12 @@ def parseExpn(tokens):
 
 def parseAppl(tokens):
     e=parseExpn(tokens)
-    while tokens.next() not in (")","eof",""):
+    x = tokens.next()
+    print(x)
+    while x not in (")","eof",""):
+        time.sleep(3)
         e=["App",e,parseExpn(tokens)]
+        x = tokens.next()
     return e
         
 def treeToDOT(tree):
@@ -81,6 +86,63 @@ def parseAndReport(tks):
     with open("test.gv",'w') as f:
         f.write(treeToDOT(ast))
     return ast # also, you forgot to do this. ast below would've been None
+
+
+# the whole kit 'n' kaboodle, only call this if you want to invoke the powers
+# of interpreting an AST.
+def interpret(ast):
+    
+
+# this does a single beta reduce step.
+# returns a new ast with the beta reduce step done
+def betaReduce(ast):
+    switch (ast[0]):
+        case "Lambda":
+            # first thing's first, gotta alpha rename
+            alphaRemame( ast, betaReduce(ast[1]) )
+            
+            #replace the 2nd arg's instances of the first arg with the first arg
+            # then apply replaces the 
+
+            # do whatever lambda should do
+
+        case "App":
+            # you gotta do what you gotta do
+
+        case "Variable":
+            return ast[1]
+            
+
+# this does all the beta reduce steps.
+# retuns the reduced ast
+def betaReduceLoop(ast):
+    if len(ast) > 1:
+        newAst = betaReduce(ast)
+        betaReduceLoop(newAst)
+    else: 
+        return ast
+
+# Renames a specific variable in the current part of the tree. Basically, only
+# renames the variables in the current lambda to some weird ass name that won't
+# be repeated, ever, probably.
+def alphaRemame(ast, variableName):
+    # transverse the ast and rename all of the variables of variableName to
+    # some random ass new name. If there's a lambda with the same variable, 
+    # no more renaming.
+    
+    # generate a kick ass new random name
+    newKickAssName = variableName + id(variableName)
+    
+    def recursion(ast, oldName):
+        if len(ast) < 0:
+            return "swagyolo"
+        if len(ast) == 1: #in this case, we're looking at a variable
+            if ast[0] == variableName:
+                ast[0] = newKickAssName
+        for i in ast[0:-1]:
+            recursion(i,oldName)
+
+    recursion(ast, variableName)
 
 
 def loadAll(files):
