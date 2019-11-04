@@ -91,31 +91,61 @@ def parseAndReport(tks):
 # the whole kit 'n' kaboodle, only call this if you want to invoke the powers
 # of interpreting an AST.
 def interpret(ast):
-    
+    return "poop"
 
 # this does a single beta reduce step.
 # returns a new ast with the beta reduce step done
 def betaReduce(ast):
-    switch (ast[0]):
-        case "Lambda":
-            # first thing's first, gotta alpha rename
-            alphaRemame( ast, betaReduce(ast[1]) )
+    if ast[0] == "Lambda":
+        # first thing's first, gotta alpha rename
+        alphaRemaim( ast, betaReduce(ast[1]) )
+        
+        # reduce subtrees
+        a = betaReduce(ast[1])
+        b = betaReduce(ast[2])
+
+        #return the new subtree
+        return ["Lambda",a,b]
+ 
+    if ast[0] == "App":
+
+        betaReduce(ast[1])
+        betaReduce(ast[2])
+        # now both sides of the tree have been beta reduced.
+        thingThatNeedsToBeApplied = ast[2]
+
+        
+        # if left side is a lambda, it gets swaggy
+        if ast[1][0] == "Lambda":
+            # the thingThatNeedsToBeApplied has to replace all 
+            # of the things on the left of Lambda
+            thingToReplace = ast[1][1]
             
-            #replace the 2nd arg's instances of the first arg with the first arg
-            # then apply replaces the 
+            # in the second argument of the lambda, gotta replace
+            def replace(ast,thingToReplace,replaceWithThis):
+                if len(ast) < 1:
+                    return ast
+                if ast[0] == thingToReplace:
+                    ast[0] = replaceWithThis
+                for i in ast:
+                    replace(ast[i],thingToReplace,replaceWithThis) 
+            newTree = replace(ast[1][2], thingToReplace, thingThatNeedsToBeApplied)
+            return newTree
 
-            # do whatever lambda should do
+        return ["App", ast[1], ast[2]]
 
-        case "App":
-            # you gotta do what you gotta do
-
-        case "Variable":
-            return ast[1]
+    if ast[0] == "Variable":
+        return ast[1]
             
+
+
 
 # this does all the beta reduce steps.
 # retuns the reduced ast
 def betaReduceLoop(ast):
+    # should check to make sure it isn't beta reducible also!
+
+
     if len(ast) > 1:
         newAst = betaReduce(ast)
         betaReduceLoop(newAst)
@@ -125,13 +155,13 @@ def betaReduceLoop(ast):
 # Renames a specific variable in the current part of the tree. Basically, only
 # renames the variables in the current lambda to some weird ass name that won't
 # be repeated, ever, probably.
-def alphaRemame(ast, variableName):
+def alphaRemaim(ast, variableName):
     # transverse the ast and rename all of the variables of variableName to
     # some random ass new name. If there's a lambda with the same variable, 
     # no more renaming.
     
     # generate a kick ass new random name
-    newKickAssName = variableName + id(variableName)
+    newKickAssName = variableName + id(ast)
     
     def recursion(ast, oldName):
         if len(ast) < 0:
