@@ -4,6 +4,9 @@ import tokenizer
 import re
 import time
 
+DEBUG_COMMENTS_ON = False
+
+
 def parseExpn(tokens):
     if tokens.next() == "(":
         tokens.eat("(")
@@ -90,14 +93,19 @@ def parseAndReport(tks):
 # the whole kit 'n' kaboodle, only call this if you want to invoke the powers
 # of interpreting an AST.
 def interpret(ast):
-    return "poop"
+    return betaReduceLoop(ast)
 
 # this does a single beta reduce step.
 # returns a new ast with the beta reduce step done
 def betaReduce(ast):
+    if not ast:
+        return 
     if ast[0] == "Lambda":
         # first thing's first, gotta alpha rename
-        alphaRemaim( ast, betaReduce(ast[1]) )
+        if DEBUG_COMMENTS_ON:
+            print(ast,"is the ast before we remaim")
+            print(ast[1], "is the variable that willl be remaimed")
+        alphaRemaim( ast, ast[1] )
         
         # reduce subtrees
         a = betaReduce(ast[1])
@@ -108,10 +116,10 @@ def betaReduce(ast):
  
     if ast[0] == "App":
 
-        betaReduce(ast[1])
-        betaReduce(ast[2])
+        left = betaReduce(ast[1])
+        right = betaReduce(ast[2])
         # now both sides of the tree have been beta reduced.
-        thingThatNeedsToBeApplied = ast[2]
+        thingThatNeedsToBeApplied = right
 
         
         # if left side is a lambda, it gets swaggy
@@ -122,19 +130,38 @@ def betaReduce(ast):
             
             # in the second argument of the lambda, gotta replace
             def replace(ast,thingToReplace,replaceWithThis):
-                if len(ast) < 1:
+                # first replace the variable if it needs to be replaced
+                if ast[0] == "Variable":
+                    if ast[1] == thingToReplace:
+                        ast[1] = replaceWithThis
+                        ast = [replaceWithThis]
+                # return if we're at an dead end
+                if len(ast) <= 1:
                     return ast
-                if ast[0] == thingToReplace:
-                    ast[0] = replaceWithThis
-                for i in ast:
+
+                #continue on for all subtrees
+                for i in range(len(ast)):
                     replace(ast[i],thingToReplace,replaceWithThis) 
+            
+            if DEBUG_COMMENTS_ON:
+                print("old tree is ", ast[1][2])
+                print("thing to replace is",thingToReplace)
+                print("thingThatNeedsToBeApplied is ",thingThatNeedsToBeApplied)
+            
             newTree = replace(ast[1][2], thingToReplace, thingThatNeedsToBeApplied)
+            
+            if DEBUG_COMMENTS_ON:
+                print("here's what the new tree is", ast[1][2][1])
+                print("actually, it'''s",newTree)
             return newTree
 
-        return ["App", ast[1], ast[2]]
+        return ["App", left, right]
 
     if ast[0] == "Variable":
+        if DEBUG_COMMENTS_ON:
+            print("returning" ,ast[1])
         return ast[1]
+    else: return ast
             
 
 
@@ -147,7 +174,7 @@ def betaReduceLoop(ast):
     if (ast) == newAst:
         # everything is done. I can die happy now (maybe)
         return ast
-    betaReduceLoop(newAst)
+    return betaReduceLoop(newAst)
     
 # Renames a specific variable in the current part of the tree. Basically, only
 # renames the variables in the current lambda to some weird ass name that won't
@@ -158,16 +185,25 @@ def alphaRemaim(ast, variableName):
     # no more renaming.
     
     # generate a kick ass new random name
-    newKickAssName = variableName + id(ast)
-    
+    newKickAssName = variableName + str(id(ast))
+    if DEBUG_COMMENTS_ON:
+        print(ast, "is the ast before we rename!" )
+#    x = 0
     def recursion(ast, oldName):
-        if len(ast) < 0:
+ #       x += 1
+ #       if x > 4: return "poop" 
+        if ast[0] == 'Variable': #in this case, we're looking at a variable
+            if ast[1] == oldName:
+#                print(ast[1],"is the variable")
+#                print(ast,"is the tree")
+                ast[1] = newKickAssName
+#        print("here's the ast:",ast)
+        if len(ast) <= 1:
             return "swagyolo"
-        if len(ast) == 1: #in this case, we're looking at a variable
-            if ast[0] == variableName:
-                ast[0] = newKickAssName
-        for i in ast[0:-1]:
-            recursion(i,oldName)
+        
+        for i in ast:
+#            print(i, "is i")
+            recursion([i],oldName)
 
     recursion(ast, variableName)
 
@@ -206,4 +242,5 @@ if __name__ == "__main__":
         loadAll(sys.argv[1:])
     else:
         print("Enter an expression to parse: ",end='')
-        parseAndReport(tokenizer.TokenStream(input()))
+        yolo = parseAndReport(tokenizer.TokenStream(input()))
+        print(interpret(yolo))
