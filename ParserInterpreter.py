@@ -203,7 +203,7 @@ def alphaRemaim(ast, variableName):
         
         if isinstance(ast,list):
             for i in ast:
-                recursion([i],oldName)
+                recursion(i,oldName)
 
     recursion(ast, variableName)
 
