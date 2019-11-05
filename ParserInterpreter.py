@@ -4,7 +4,7 @@ import tokenizer
 import re
 import time
 
-DEBUG_COMMENTS_ON = False
+DEBUG_COMMENTS_ON = True
 
 
 def parseExpn(tokens):
@@ -98,7 +98,10 @@ def interpret(ast):
 # this does a single beta reduce step.
 # returns a new ast with the beta reduce step done
 def betaReduce(ast):
+    if DEBUG_COMMENTS_ON:
+        print(ast,"is getting beta reduced! yeet")
     if not ast:
+        print("!!!",ast)
         return 
     if ast[0] == "Lambda":
         # first thing's first, gotta alpha rename
@@ -131,17 +134,22 @@ def betaReduce(ast):
             # in the second argument of the lambda, gotta replace
             def replace(ast,thingToReplace,replaceWithThis):
                 # first replace the variable if it needs to be replaced
+                if DEBUG_COMMENTS_ON:
+                    print("REPLACIN:",ast,thingToReplace,replaceWithThis)
                 if ast[0] == "Variable":
                     if ast[1] == thingToReplace:
                         ast[1] = replaceWithThis
                         ast = [replaceWithThis]
                 # return if we're at an dead end
-                if len(ast) <= 1:
+                if len(ast) <= 1 or not isinstance(ast,list):
+                    if DEBUG_COMMENTS_ON:
+                        print("ast is short!",ast)
                     return ast
 
                 #continue on for all subtrees
                 for i in range(len(ast)):
                     replace(ast[i],thingToReplace,replaceWithThis) 
+                return ast
             
             if DEBUG_COMMENTS_ON:
                 print("old tree is ", ast[1][2])
@@ -195,6 +203,7 @@ def alphaRemaim(ast, variableName):
         
                     print(ast[1],"is the variable")
                     print(ast,"is the tree")
+                    print("it shalt now be:",newKickAssName)
                 ast[1] = newKickAssName
         if DEBUG_COMMENTS_ON:
             print("here's the ast:",ast)
@@ -206,6 +215,11 @@ def alphaRemaim(ast, variableName):
                 recursion(i,oldName)
 
     recursion(ast, variableName)
+
+    if ast[0]=="Lambda": # should always hold
+        ast[1]=newKickAssName
+    else:
+        print(ast,"why is this like this")
 
 
 def loadAll(files):
