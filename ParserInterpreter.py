@@ -216,6 +216,14 @@ def loadAll(files):
             src = f.read()
             tks = tokenizer.TokenStream(src,filename=fname)
             ast = parseAndReport(tks)
+            reduced = interpret(ast)
+            print(reduced)
+            print()
+            print(prettyprint(reduced))
+            print()
+            with open("reduced.gv",'w') as f:
+                f.write(treeToDOT(reduced))
+            
     except tokenizer.SyntaxError as e:
         print("Syntax error.")
         print(e.args[0])
@@ -242,4 +250,10 @@ if __name__ == "__main__":
     else:
         print("Enter an expression to parse: ",end='')
         yolo = parseAndReport(tokenizer.TokenStream(input()))
-        print(interpret(yolo))
+        reduced = interpret(yolo)
+        print(reduced)
+        print()
+        print(prettyprint(reduced))
+        print()
+        with open("reduced.gv",'w') as f:
+            f.write(treeToDOT(reduced))
