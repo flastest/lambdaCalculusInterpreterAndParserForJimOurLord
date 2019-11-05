@@ -193,7 +193,7 @@ def alphaRemaim(ast, variableName):
     # no more renaming.
     
     # generate a kick ass new random name
-    newKickAssName = variableName + str(id(ast))
+    newKickAssName = variableName +"_"+ str(id(ast))
     if DEBUG_COMMENTS_ON:
         print(ast, "is the ast before we rename!" )
     def recursion(ast, oldName):
