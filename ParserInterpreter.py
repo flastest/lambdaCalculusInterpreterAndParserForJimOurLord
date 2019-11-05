@@ -188,21 +188,20 @@ def alphaRemaim(ast, variableName):
     newKickAssName = variableName + str(id(ast))
     if DEBUG_COMMENTS_ON:
         print(ast, "is the ast before we rename!" )
-#    x = 0
     def recursion(ast, oldName):
- #       x += 1
- #       if x > 4: return "poop" 
         if ast[0] == 'Variable': #in this case, we're looking at a variable
             if ast[1] == oldName:
-#                print(ast[1],"is the variable")
-#                print(ast,"is the tree")
+                if DEBUG_COMMENTS_ON:
+        
+                    print(ast[1],"is the variable")
+                    print(ast,"is the tree")
                 ast[1] = newKickAssName
-#        print("here's the ast:",ast)
+        if DEBUG_COMMENTS_ON:
+            print("here's the ast:",ast)
         if len(ast) <= 1:
             return "swagyolo"
         
         for i in ast:
-#            print(i, "is i")
             recursion([i],oldName)
 
     recursion(ast, variableName)
