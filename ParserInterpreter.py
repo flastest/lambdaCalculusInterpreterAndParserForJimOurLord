@@ -201,8 +201,9 @@ def alphaRemaim(ast, variableName):
         if len(ast) <= 1:
             return "swagyolo"
         
-        for i in ast:
-            recursion([i],oldName)
+        if isinstance(ast,list):
+            for i in ast:
+                recursion([i],oldName)
 
     recursion(ast, variableName)
 
