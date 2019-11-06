@@ -216,6 +216,7 @@ def alphaRemaim(ast, variableName):
         if len(ast) <= 1:
             return "swagyolo"
 
+        # don't go into a lambda whose variable is shadowing this one's
         if ast[0]=="Lambda" and ast[1] == oldName and id(ast)!=top:
             if DEBUG_COMMENTS_ON:
                 print("cave johnson we're done here",ast)   
