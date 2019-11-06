@@ -48,17 +48,23 @@ def treeToDOT(*trees):
         # DOT formatter a class, but that's a bit too far for a bonus
         # so this, while unfortunate, will have to do:
         nonlocal jankID
+        # things can get hella long. this is truncator:
+        def trunc(s):
+            if len(s)<20:
+                return s
+            else:
+                return f"{s[:5]}[...]{s[-15:]}"
         # for each node to render separately, it must have an unique
         # name, as mentioned above. thankfully, id's exact job is
         # associating unique values with objects
-        s=f'"node{id(tree)}" [label="{tree[0]}"];\n'
+        s=f'"node{id(tree)}" [label="{trunc(tree[0])}"];\n'
         for i in tree[1:]:
             if isinstance(i,list):
                 s+=f'"node{id(tree)}" -> "node{id(i)}";\n'
                 s+=recurse(i)
             else:
                 s+=f'"node{id(tree)}" -> "JANKY{jankID}";\n'
-                s+=f'"JANKY{jankID}" [label="{i}" shape=box];\n'
+                s+=f'"JANKY{jankID}" [label="{trunc(i)}" shape=box];\n'
                 jankID+=1
         return s;
     return f"""
