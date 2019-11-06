@@ -108,6 +108,8 @@ def betaReduce(ast):
         if DEBUG_COMMENTS_ON:
             print(ast,"is the ast before we remaim")
             print(ast[1], "is the variable that willl be remaimed")
+
+        #rename the ast[1]s in the ast
         alphaRemaim( ast, ast[1] )
         
         # reduce subtrees
@@ -118,8 +120,11 @@ def betaReduce(ast):
         return ["Lambda",a,b]
  
     if ast[0] == "App":
-
+        print("BETA REDUCING THE LEFT \n")
+        
         left = betaReduce(ast[1])
+        print("BETA REDUCINT THE RIGHT\n")
+
         right = betaReduce(ast[2])
         # now both sides of the tree have been beta reduced.
         thingThatNeedsToBeApplied = right
@@ -201,8 +206,11 @@ def alphaRemaim(ast, variableName):
     newKickAssName = variableName +"_"+ str(id(ast))
     top=id(ast)
     if DEBUG_COMMENTS_ON:
-        print(ast, "is the ast before we rename!" )
+        print(ast, "is the ast before we remaim!" )
     def recursion(ast, oldName):
+        if DEBUG_COMMENTS_ON:       
+            print("going through and renaming",oldName,"to",newKickAssName,"in",ast)        
+        
         if ast[0] == 'Variable': #in this case, we're looking at a variable
             if ast[1] == oldName:
                 if DEBUG_COMMENTS_ON:
@@ -211,6 +219,7 @@ def alphaRemaim(ast, variableName):
                     print(ast,"is the tree")
                     print("it shalt now be:",newKickAssName)
                 ast[1] = newKickAssName
+        
         if DEBUG_COMMENTS_ON:
             print("here's the ast:",ast)
         if len(ast) <= 1:
@@ -223,9 +232,14 @@ def alphaRemaim(ast, variableName):
             return
         
         if isinstance(ast,list):
-            for i in ast:
-                recursion(i,oldName)
+            for i in range(len(ast)):
+                # GET OUT OF HERE YOU FREAKING OLD NAMES!!
+                if ast[i] == oldName:
+                    ast[i] = newKickAssName 
 
+                #lets do the rest of the ast now
+                recursion(ast[i],oldName)
+        #'''
     recursion(ast, variableName)
 
     if ast[0]=="Lambda": # should always hold
