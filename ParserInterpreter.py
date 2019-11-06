@@ -5,6 +5,8 @@ import re
 import time
 
 DEBUG_COMMENTS_ON = True
+DEBUG_FILE_WRITING_ON = True
+
 
 
 def parseExpn(tokens):
@@ -31,9 +33,9 @@ def parseAppl(tokens):
         x = tokens.next()
     return e
         
-def treeToDOT(tree):
+def treeToDOT(*trees):
     """
-    Converts an AST, passed in, into a graph in DOT format, which it
+    Converts ASTs, passed in, into a graph in DOT format, which it
     then returns as a string. 
     """
     # non-node objects, such as integers, can show up more than once
@@ -61,7 +63,8 @@ def treeToDOT(tree):
         return s;
     return f"""
 digraph AbstractSyntaxTree {{
-{recurse(tree)}
+{'''
+'''.join(map(recurse,trees))}
 }}
 """
 
@@ -180,15 +183,23 @@ def betaReduce(ast):
     else: return ast
             
 
-
+if DEBUG_FILE_WRITING_ON:
+    stepcount=0
 
 # this does all the beta reduce steps.
 # retuns the reduced ast
 def betaReduceLoop(ast):
+    if DEBUG_FILE_WRITING_ON:
+        global stepcount
     # should check to make sure it isn't beta reducible also!
     newAst = betaReduce(ast)
     if DEBUG_COMMENTS_ON:
-        print("Reducened!" ,ast,"->", newAst)  
+        print("Reducened!" ,ast,"->", newAst)
+    if DEBUG_FILE_WRITING_ON:
+        with open(f"beta{stepcount}.gv",'w') as f:
+            f.write(treeToDOT(ast))
+        stepcount+=1
+
     if (ast) == newAst:
         # everything is done. I can die happy now (maybe)
         return ast
