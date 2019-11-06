@@ -197,6 +197,7 @@ def alphaRemaim(ast, variableName):
     
     # generate a kick ass new random name
     newKickAssName = variableName +"_"+ str(id(ast))
+    top=id(ast)
     if DEBUG_COMMENTS_ON:
         print(ast, "is the ast before we rename!" )
     def recursion(ast, oldName):
@@ -212,6 +213,11 @@ def alphaRemaim(ast, variableName):
             print("here's the ast:",ast)
         if len(ast) <= 1:
             return "swagyolo"
+
+        if ast[0]=="Lambda" and ast[1] == oldName and id(ast)!=top:
+            if DEBUG_COMMENTS_ON:
+                print("cave johnson we're done here",ast)   
+            return
         
         if isinstance(ast,list):
             for i in ast:
