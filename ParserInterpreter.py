@@ -182,6 +182,8 @@ def betaReduce(ast):
 def betaReduceLoop(ast):
     # should check to make sure it isn't beta reducible also!
     newAst = betaReduce(ast)
+    if DEBUG_COMMENTS_ON:
+        print("Reducened!" ,ast)     
     if (ast) == newAst:
         # everything is done. I can die happy now (maybe)
         return ast
