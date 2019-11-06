@@ -139,7 +139,10 @@ def betaReduce(ast):
                 if ast[0] == "Variable":
                     if ast[1] == thingToReplace:
                         ast[1] = replaceWithThis
-                        ast = [replaceWithThis]
+                        if isinstance(ast,list):
+                            ast = replace(ast, thingToReplace ,replaceWithThis)
+                        else:
+                            ast = [replaceWithThis]
                 # return if we're at an dead end
                 if len(ast) <= 1 or not isinstance(ast,list):
                     if DEBUG_COMMENTS_ON:
