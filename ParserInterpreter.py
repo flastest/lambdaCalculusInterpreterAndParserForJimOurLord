@@ -110,7 +110,8 @@ def betaReduce(ast):
     if DEBUG_COMMENTS_ON:
         print(ast,"is getting beta reduced! yeet")
     if not ast:
-        print("!!!",ast)
+        if DEBUG_COMMENTS_ON:
+            print("!!!",ast)
         return 
     if ast[0] == "Lambda":
         # first thing's first, gotta alpha rename
@@ -129,11 +130,12 @@ def betaReduce(ast):
         return ["Lambda",a,b]
  
     if ast[0] == "App":
-        print("BETA REDUCING THE LEFT \n")
-        
+        if DEBUG_COMMENTS_ON:
+            print("BETA REDUCING THE LEFT \n")
         left = betaReduce(ast[1])
-        print("BETA REDUCINT THE RIGHT\n")
 
+        if DEBUG_COMMENTS_ON:
+            print("BETA REDUCINT THE RIGHT\n")
         right = betaReduce(ast[2])
         # now both sides of the tree have been beta reduced.
         thingThatNeedsToBeApplied = right
@@ -192,13 +194,7 @@ def betaReduce(ast):
 
         return ["App", left, right]
 
-    ## Note: I also got rid of this. You probably did on your copy too it wasn't pushed
-#   if ast[0] == "Variable":
-#       if DEBUG_COMMENTS_ON:
-#           print("returning" ,ast[1])
-#       return ast[1]
-#   else:
-#       return ast
+    
     return ast
             
 
@@ -276,7 +272,8 @@ def alphaRemaim(ast, variableName):
     if ast[0]=="Lambda": # should always hold
         ast[1]=newKickAssName
     else:
-        print(ast,"why is this like this")
+        if DEBUG_COMMENTS_ON: # gotta stay safe with these print statements!
+            print(ast,"why is this like this")
 
 
 def loadAll(files):
