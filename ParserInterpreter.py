@@ -3,10 +3,10 @@ import json
 import tokenizer
 import re
 import time
+import copy
 
-DEBUG_COMMENTS_ON = True
-DEBUG_FILE_WRITING_ON = True
-
+DEBUG_COMMENTS_ON = False
+DEBUG_FILE_WRITING_ON = False
 
 
 def parseExpn(tokens):
@@ -28,7 +28,7 @@ def parseAppl(tokens):
     e=parseExpn(tokens)
     x = tokens.next()
     while x not in (")","eof",""):
-        time.sleep(3)
+        time.sleep(0.1)
         e=["App",e,parseExpn(tokens)]
         x = tokens.next()
     return e
@@ -152,11 +152,19 @@ def betaReduce(ast):
                     print("REPLACIN:",ast,thingToReplace,replaceWithThis)
                 if ast[0] == "Variable":
                     if ast[1] == thingToReplace:
-                        ast[1] = replaceWithThis
-                        if isinstance(ast,list):
-                            ast = replace(ast, thingToReplace ,replaceWithThis)
-                        else:
-                            ast = [replaceWithThis]
+                        ## Note to Ariel: I made it replace the variable object instead
+                        # of the string in it. It was rather simple, except
+
+#                       ast[1] = replaceWithThis
+#                       if isinstance(ast,list):
+#                           ast = replace(ast, thingToReplace ,replaceWithThis)
+#                       else:
+#                           ast = [replaceWithThis]
+
+                        ## Note: the deepcopy is needed because the same-memory-address
+                        # thing caused variable objects to be shared and over-maimed as each of their
+                        # parent lambdas was maimed.
+                        return copy.deepcopy(replaceWithThis)
                 # return if we're at an dead end
                 if len(ast) <= 1 or not isinstance(ast,list):
                     if DEBUG_COMMENTS_ON:
@@ -165,7 +173,9 @@ def betaReduce(ast):
 
                 #continue on for all subtrees
                 for i in range(len(ast)):
-                    replace(ast[i],thingToReplace,replaceWithThis) 
+                    ## Note: Mutating the list here as opposed to in the function
+                    # ended up easier
+                    ast[i]=replace(ast[i],thingToReplace,replaceWithThis) 
                 return ast
             
             if DEBUG_COMMENTS_ON:
@@ -182,11 +192,14 @@ def betaReduce(ast):
 
         return ["App", left, right]
 
-    if ast[0] == "Variable":
-        if DEBUG_COMMENTS_ON:
-            print("returning" ,ast[1])
-        return ast[1]
-    else: return ast
+    ## Note: I also got rid of this. You probably did on your copy too it wasn't pushed
+#   if ast[0] == "Variable":
+#       if DEBUG_COMMENTS_ON:
+#           print("returning" ,ast[1])
+#       return ast[1]
+#   else:
+#       return ast
+    return ast
             
 
 if DEBUG_FILE_WRITING_ON:
@@ -210,7 +223,8 @@ def betaReduceLoop(ast):
         # everything is done. I can die happy now (maybe)
         return ast
     return betaReduceLoop(newAst)
-    
+
+
 # Renames a specific variable in the current part of the tree. Basically, only
 # renames the variables in the current lambda to some weird ass name that won't
 # be repeated, ever, probably.
