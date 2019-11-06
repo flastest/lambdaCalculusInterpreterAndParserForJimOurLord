@@ -208,22 +208,9 @@ def alphaRemaim(ast, variableName):
     if DEBUG_COMMENTS_ON:
         print(ast, "is the ast before we remaim!" )
     def recursion(ast, oldName):
-        print("going through and renaming",oldName,"to",newKickAssName,"in",ast)        
-        '''
-        if isinstance(ast,list) and ast[0] == oldName:
-            ast[0] = newKickAssName  
-        if ast[0] == "Variable":
-            if isinstance(ast,list) and ast[1] == oldName:
-                ast[1] == newKickAssName    
-        if ast[0]=="Lambda" and ast[1] == oldName and id(ast)!=top:
-            if DEBUG_COMMENTS_ON:
-                print("cave johnson we're done here",ast)   
-            return
-        if isinstance(ast,list):
-            for i in ast:
-                recursion(i,oldName)
+        if DEBUG_COMMENTS_ON:       
+            print("going through and renaming",oldName,"to",newKickAssName,"in",ast)        
         
-        '''
         if ast[0] == 'Variable': #in this case, we're looking at a variable
             if ast[1] == oldName:
                 if DEBUG_COMMENTS_ON:
