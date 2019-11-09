@@ -1,8 +1,8 @@
 import io
 import tokenize
 
-DELIMITERS = '()'
-OPERATORS = '.L' 
+DELIMITERS = '()[].L=' # this is hacky, but by doing this, Lx and such work
+OPERATORS = ''
 
 # this is stolen from Jim's code, but changed a little. Thanks, Jim!
 class ParseError(Exception):
@@ -112,9 +112,9 @@ class TokenStream:
         Checks if next token is a name.
         """
         tk = self.next()
-        isname = tk[0].isalpha() or tk[0] =='_'
+        isname = tk[0] not in DELIMITERS+OPERATORS+" \t\n\r"#tk[0].isalpha() or tk[0] =='_'
         for c in tk[1:]:
-            isname = isname and (c.isalnum() or c == '_')
+            isname = isname and c not in DELIMITERS+OPERATORS+" \t\n\r"
         return isname
 
     
@@ -148,9 +148,11 @@ class TokenStream:
             return self.source[lookahead-1]
 
     def chompWord(self):
-        self.lexassert(self.nxt().isalpha() or self.nxt() == '_')
+        #self.lexassert(self.nxt().isalpha() or self.nxt() == '_')
+        self.lexassert(self.nxt() not in DELIMITERS+OPERATORS+" \t\n\r")
         token = self.chompChar()
-        while self.nxt().isalnum() or self.nxt() == '_':
+        while self.nxt() not in DELIMITERS+OPERATORS+" \t\n\r":
+        #self.nxt().isalnum() or self.nxt() == '_':
             token += self.chompChar()
         self.issue(token)            
     

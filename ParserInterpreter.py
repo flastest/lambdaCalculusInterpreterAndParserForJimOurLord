@@ -8,6 +8,19 @@ import copy
 DEBUG_COMMENTS_ON = False
 DEBUG_FILE_WRITING_ON = False
 
+def parseMacros(tokens):
+    defns=[]
+    while tokens.next()=="[":
+        tokens.eat("[")
+        name=tokens.eatName()
+        tokens.eat("=")
+        defn=parseAppl(tokens)
+        tokens.eat("]")
+        defns.append((name,defn))
+    base=parseAppl(tokens)
+    for name,defn in defns[::-1]:
+        base=["App",["Lambda",name,base],defn]
+    return base
 
 def parseExpn(tokens):
     if tokens.next() == "(":
@@ -27,7 +40,7 @@ def parseExpn(tokens):
 def parseAppl(tokens):
     e=parseExpn(tokens)
     x = tokens.next()
-    while x not in (")","eof",""):
+    while x not in (")","eof","]",""):
         time.sleep(0.1)
         e=["App",e,parseExpn(tokens)]
         x = tokens.next()
@@ -85,7 +98,7 @@ def prettyprint(tree):
         return str(tree)+"\n"
 
 def parseAndReport(tks):
-    ast = parseAppl(tks)
+    ast = parseMacros(tks)
     tks.checkEOF()  # Check if everything was consumed.
     print()
     print(prettyprint(ast))
@@ -281,7 +294,7 @@ def unparse(ast):
     # awful case-statement hack but eh
     lookup={
         "Lambda": lambda x,y: f"(L{x}.{unparse(y)})",
-        "App": lambda x,y: f"({unparse(x)} {unparse(y)})",
+        "App": lambda x,y: f"{unparse(x)} ({unparse(y)})" if y[0]=="App" else f"{unparse(x)} {unparse(y)}",
         "Variable": lambda x: x
     }
     return lookup[ast[0]](*ast[1:])
