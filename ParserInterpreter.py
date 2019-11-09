@@ -90,6 +90,7 @@ def parseAndReport(tks):
     print()
     print(prettyprint(ast))
     print()
+    print(unparse(ast))
     # TODO: make this work better with loadAll;
     # this is messy not-intended-for-human-consumption output, so
     # dumping it in stdout seems wrong, but so's a fixed file when
@@ -275,6 +276,15 @@ def alphaRemaim(ast, variableName):
         if DEBUG_COMMENTS_ON: # gotta stay safe with these print statements!
             print(ast,"why is this like this")
 
+# Goes from an AST back to syntax.
+def unparse(ast):
+    # awful case-statement hack but eh
+    lookup={
+        "Lambda": lambda x,y: f"(L{x}.{unparse(y)})",
+        "App": lambda x,y: f"({unparse(x)} {unparse(y)})",
+        "Variable": lambda x: x
+    }
+    return lookup[ast[0]](*ast[1:])
 
 def loadAll(files):
     try:
@@ -289,6 +299,8 @@ def loadAll(files):
             print(reduced)
             print()
             print(prettyprint(reduced))
+            print()
+            print(unparse(reduced))
             print()
             with open("reduced.gv",'w') as f:
                 f.write(treeToDOT(reduced))
@@ -323,6 +335,8 @@ if __name__ == "__main__":
         print(reduced)
         print()
         print(prettyprint(reduced))
+        print()
+        print(unparse(reduced))
         print()
         with open("reduced.gv",'w') as f:
             f.write(treeToDOT(reduced))
