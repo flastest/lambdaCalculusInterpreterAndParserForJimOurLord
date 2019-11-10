@@ -289,6 +289,41 @@ def alphaRemaim(ast, variableName):
         if DEBUG_COMMENTS_ON: # gotta stay safe with these print statements!
             print(ast,"why is this like this")
 
+# demaims a name
+def basename(name):
+    return name.split("_")[0]
+
+# demaims an entire AST, bc the maiming level on the maths is ridiculous
+def demaim(ast):
+    def varnames(ast):
+        if isinstance(ast,str):
+            return {ast}
+        vars=set()
+        for i in ast:
+            vars |= varnames(i)
+        return vars
+    def applyRemaps(ast):
+        if ast[0]=="Variable":
+            return ["Variable", remaps.get(ast[1],ast[1])]
+        elif ast[0]=="App":
+            return ["App",applyRemaps(ast[1]),applyRemaps(ast[2])]
+        elif ast[0]=="Lambda":
+            return ["Lambda",remaps.get(ast[1],ast[1]),applyRemaps(ast[2])]
+            
+    vars=varnames(ast)
+    bases={}
+    for i in vars:
+        bases[basename(i)]=bases.get(basename(i),[])+[i]
+    remaps={}
+    for i in bases:
+        for j in range(len(bases[i])):
+            if len(bases[i])==1:
+                remaps[bases[i][j]]=basename(bases[i][j])
+            else:
+                remaps[bases[i][j]]=basename(bases[i][j])+"_"+str(j)
+    return applyRemaps(ast)
+    
+
 # Goes from an AST back to syntax.
 def unparse(ast):
     # awful case-statement hack but eh
@@ -308,7 +343,7 @@ def loadAll(files):
             src = f.read()
             tks = tokenizer.TokenStream(src,filename=fname)
             ast = parseAndReport(tks)
-            reduced = interpret(ast)
+            reduced = demaim(interpret(ast))
             print(reduced)
             print()
             print(prettyprint(reduced))
@@ -344,7 +379,7 @@ if __name__ == "__main__":
     else:
         print("Enter an expression to parse: ",end='')
         yolo = parseAndReport(tokenizer.TokenStream(input()))
-        reduced = interpret(yolo)
+        reduced = demaim(interpret(yolo))
         print(reduced)
         print()
         print(prettyprint(reduced))
