@@ -30,6 +30,8 @@ class TokenStream:
         self.tokens = []  # The list of tokens constructed by the lexical analyzer.
         self.extents = []     
         self.starts = []
+        self.parendepth=0
+        self.cannewline=True
 
         # Sets up and then runs the lexical analyzer.
         self.initIssue()
@@ -183,6 +185,15 @@ class TokenStream:
         self.column += 1
         return c
 
+    def chompDelimiter(self):
+        c=self.chompChar()
+        self.issue(c)
+        if c in "[(":
+            self.parendepth+=1
+        elif c in "])":
+            self.parendepth-=1
+
+            
     def chompWhitespace(self,withinToken=False):
         self.lexassert(len(self.source) > 0)
         c = self.source[0]
@@ -192,6 +203,9 @@ class TokenStream:
         elif c == '\n':
             self.line += 1
             self.column = 1
+            if self.parendepth==0 and self.cannewline and self.source:
+                self.issue("\n")
+                self.cannewline=False
         else:
             self.column += 1
         if not withinToken:
@@ -220,11 +234,14 @@ class TokenStream:
                 self.chompWhitespace()
             # CHOMP a single "delimiter" character
             elif self.source[0] in DELIMITERS:
-                self.issue(self.chompChar())
+                self.cannewline=True
+                self.chompDelimiter()
             # CHOMP an operator               
             elif self.source[0] in OPERATORS:
+                self.cannewline=True
                 self.chompOperator()
             # CHOMP a reserved word or a name.
             else:
+                self.cannewline=True
                 self.chompWord()
 

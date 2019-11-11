@@ -8,6 +8,18 @@ import copy
 DEBUG_COMMENTS_ON = False
 DEBUG_FILE_WRITING_ON = False
 
+
+def printasts(asts,name="test"):
+    print()
+    print(*map(prettyprint,asts),sep="\n\n\n")
+    print()
+    print(*map(unparse,asts),sep="\n")
+    for i in range(len(asts)):
+        with open(f"{name}{i}.gv",'w') as f:
+            f.write(treeToDOT(asts[i]))
+
+
+## !! NOTE: returns a list of ASTs
 def parseMacros(tokens):
     defns=[]
     while tokens.next()=="[":
@@ -16,11 +28,16 @@ def parseMacros(tokens):
         tokens.eat("=")
         defn=parseAppl(tokens)
         tokens.eat("]")
+        tokens.eat("\n")
         defns.append((name,defn))
-    base=parseAppl(tokens)
-    for name,defn in defns[::-1]:
-        base=["App",["Lambda",name,base],defn]
-    return base
+    bases=[parseAppl(tokens)]
+    while tokens.next()=="\n":
+        tokens.eat("\n")
+        bases.append(parseAppl(tokens))
+    for i in range(len(bases)):
+        for name,defn in defns[::-1]:
+            bases[i]=["App",["Lambda",name,bases[i]],defn]
+    return bases
 
 def parseExpn(tokens):
     if tokens.next() == "(":
@@ -40,7 +57,7 @@ def parseExpn(tokens):
 def parseAppl(tokens):
     e=parseExpn(tokens)
     x = tokens.next()
-    while x not in (")","eof","]",""):
+    while x not in (")","eof","]","\n",""):
         time.sleep(0.1)
         e=["App",e,parseExpn(tokens)]
         x = tokens.next()
@@ -98,25 +115,16 @@ def prettyprint(tree):
         return str(tree)+"\n"
 
 def parseAndReport(tks):
-    ast = parseMacros(tks)
+    asts = parseMacros(tks)
     tks.checkEOF()  # Check if everything was consumed.
-    print()
-    print(prettyprint(ast))
-    print()
-    print(unparse(ast))
-    # TODO: make this work better with loadAll;
-    # this is messy not-intended-for-human-consumption output, so
-    # dumping it in stdout seems wrong, but so's a fixed file when
-    # multiple reported parses can happen
-    with open("test.gv",'w') as f:
-        f.write(treeToDOT(ast))
-    return ast # also, you forgot to do this. ast below would've been None
+    printasts(asts)
+    return asts # also, you forgot to do this. ast below would've been None
 
 
 # the whole kit 'n' kaboodle, only call this if you want to invoke the powers
-# of interpreting an AST.
-def interpret(ast):
-    return betaReduceLoop(ast)
+# of interpreting a list of ASTs.
+def interpret(asts):
+    return list(map(betaReduceLoop,asts))
 
 # this does a single beta reduce step.
 # returns a new ast with the beta reduce step done
@@ -344,16 +352,9 @@ def loadAll(files):
             f = open(fname,"r")
             src = f.read()
             tks = tokenizer.TokenStream(src,filename=fname)
-            ast = parseAndReport(tks)
-            reduced = demaim(interpret(ast))
-            print(reduced)
-            print()
-            print(prettyprint(reduced))
-            print()
-            print(unparse(reduced))
-            print()
-            with open("reduced.gv",'w') as f:
-                f.write(treeToDOT(reduced))
+            asts = parseAndReport(tks)
+            reduced = list(map(demaim,interpret(asts)))
+            printasts(reduced,"reduced")
             
     except tokenizer.SyntaxError as e:
         print("Syntax error.")
@@ -379,14 +380,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         loadAll(sys.argv[1:])
     else:
-        print("Enter an expression to parse: ",end='')
-        yolo = parseAndReport(tokenizer.TokenStream(input()))
-        reduced = demaim(interpret(yolo))
-        print(reduced)
-        print()
-        print(prettyprint(reduced))
-        print()
-        print(unparse(reduced))
-        print()
-        with open("reduced.gv",'w') as f:
-            f.write(treeToDOT(reduced))
+        print("Enter an expression to parse: ",end='',flush=True)
+        yolo = parseAndReport(tokenizer.TokenStream(sys.stdin.read()))
+        reduced = list(map(demaim,interpret(yolo)))
+        printasts(reduced,"reduced")
