@@ -1,3 +1,4 @@
 *.gv
 *.png
 __pycache__/
+*.pyc # git ignore is playing a nasty game
