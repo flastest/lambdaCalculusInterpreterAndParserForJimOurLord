@@ -3,6 +3,8 @@ import tokenize
 
 DELIMITERS = '()[].L=' # this is hacky, but by doing this, Lx and such work
 OPERATORS = ''
+WHITESPACE = '\t\n\x0b\x0c\r\x1c\x1d\x1e\x1f \x85\xa0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000'
+
 
 # this is stolen from Jim's code, but changed a little. Thanks, Jim!
 class ParseError(Exception):
@@ -112,9 +114,9 @@ class TokenStream:
         Checks if next token is a name.
         """
         tk = self.next()
-        isname = tk[0] not in DELIMITERS+OPERATORS+" \t\n\r"#tk[0].isalpha() or tk[0] =='_'
+        isname = tk[0] not in DELIMITERS+OPERATORS+WHITESPACE
         for c in tk[1:]:
-            isname = isname and c not in DELIMITERS+OPERATORS+" \t\n\r"
+            isname = isname and c not in DELIMITERS+OPERATORS+WHITESPACE
         return isname
 
     
@@ -149,9 +151,9 @@ class TokenStream:
 
     def chompWord(self):
         #self.lexassert(self.nxt().isalpha() or self.nxt() == '_')
-        self.lexassert(self.nxt() not in DELIMITERS+OPERATORS+" \t\n\r")
+        self.lexassert(self.nxt() not in DELIMITERS+OPERATORS+WHITESPACE)
         token = self.chompChar()
-        while self.nxt() not in DELIMITERS+OPERATORS+" \t\n\r":
+        while self.nxt() not in DELIMITERS+OPERATORS+WHITESPACE:
         #self.nxt().isalnum() or self.nxt() == '_':
             token += self.chompChar()
         self.issue(token)            
@@ -169,7 +171,7 @@ class TokenStream:
             self.chompChar() #     
 
     def chomp(self):
-        if self.nxt() in "\n\t\r ":
+        if self.nxt() in WHITESPACE:
             self.chompWhitespace()
         else:
             self.chompChar()
@@ -185,13 +187,13 @@ class TokenStream:
         self.lexassert(len(self.source) > 0)
         c = self.source[0]
         self.source = self.source[1:]
-        if c == ' ':
-            self.column += 1
-        elif c == '\t':
-            self.column += 4
+        if c == '\t':
+            self.column += 4-((self.column-1)%4)
         elif c == '\n':
             self.line += 1
             self.column = 1
+        else:
+            self.column += 1
         if not withinToken:
             self.markIssue()
         
@@ -214,7 +216,7 @@ class TokenStream:
             if self.source[0:1] == '(*':
                 self.chompComment()
             # CHOMP whitespace
-            elif self.source[0] in ' \t\n\r':
+            elif self.source[0] in WHITESPACE:
                 self.chompWhitespace()
             # CHOMP a single "delimiter" character
             elif self.source[0] in DELIMITERS:
