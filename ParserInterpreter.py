@@ -338,6 +338,8 @@ def loadAll(files):
     try:
         # Load definitions from the specified source files.
         for fname in files:
+            assert fname[-12:] == ".( ͡° ͜ʖ ͡°)",\
+            "%r is not right file type ( ͡° ʖ̯ ͡°)! should be %r" % (fname, "( ͡° ͜ʖ ͡°)")
             print("[opening "+fname+"]")
             f = open(fname,"r")
             src = f.read()
