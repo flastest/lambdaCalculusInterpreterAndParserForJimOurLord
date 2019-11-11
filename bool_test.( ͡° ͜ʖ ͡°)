@@ -3,4 +3,5 @@
 [true=Lleft.Lright.left]
 [false=Lleft.Lright.right]
  
-if false x y
+if false x y;
+if true x y;
