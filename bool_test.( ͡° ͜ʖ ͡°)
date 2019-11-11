@@ -1,0 +1,6 @@
+[pair=Llft.Lrgt.Lbool. bool lft rgt]
+[if=Lbool.Lthen.Lelse. bool then else]
+[true=Lleft.Lright.left]
+[false=Lleft.Lright.right]
+ 
+if false x y
