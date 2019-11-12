@@ -1,0 +1,9 @@
+[let=Lvalu.Lexpn.(expn valu)]
+[val=Lold.Lnew. new]
+[0=Lf.Lx.x]
+[1=Lf.Lx.f x]
+[2=Lf.Lx.f (f x)]
+[++=Ln.Lf.Lx.f(n f x)]
+[+=Lm.Ln. m ++ n]
+
+let (val x 1) (+ 1)
