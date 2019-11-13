@@ -7,12 +7,13 @@ import copy
 
 DEBUG_COMMENTS_ON = False
 DEBUG_FILE_WRITING_ON = False
-
+DEBUG_AST_PRINTS = False
 
 def printasts(asts,name="test"):
-    print()
-    print(*map(prettyprint,asts),sep="\n\n\n")
-    print()
+    if DEBUG_AST_PRINTS:
+        print()
+        print(*map(prettyprint,asts),sep="\n\n\n")
+        print()
     print(*map(unparse,asts),sep="\n")
     for i in range(len(asts)):
         with open(f"{name}{i}.gv",'w') as f:
@@ -117,7 +118,8 @@ def prettyprint(tree):
 def parseAndReport(tks):
     asts = parseMacros(tks)
     tks.checkEOF()  # Check if everything was consumed.
-    printasts(asts)
+    if DEBUG_AST_PRINTS:
+        printasts(asts)
     return asts # also, you forgot to do this. ast below would've been None
 
 
