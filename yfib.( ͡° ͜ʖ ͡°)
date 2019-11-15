@@ -1,0 +1,14 @@
+[0=Lf.Lx.x]
+[1=Lf.Lx.f x]
+[++=Ln.Lf.Lx.f(n f x)]
+[+=Lm.Ln. m ++ n]
+[--=Ln.Lf.Lx.n (Lg.Lh.h (g f))(Lu.x)(Lu.u)]
+[true=Lleft.Lright.left]
+[false=Lleft.Lright.right]
+[0?=Ln.n (Lx.false) true]
+[if=Lbool.Lthen.Lelse. bool then else]
+[Y=Lg.(Lx.g (x x))(Lx.g (x x))]
+[fib=Y (Lr.Lx. (if (0? x)
+                   1
+                   (+ (r (-- x) (r (-- (-- x)))))))]
+fib 0

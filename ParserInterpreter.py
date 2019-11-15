@@ -6,8 +6,9 @@ import time
 import copy
 
 DEBUG_COMMENTS_ON = False
-DEBUG_FILE_WRITING_ON = False
+DEBUG_FILE_WRITING_ON = True
 DEBUG_AST_PRINTS = False
+DEBUG_BETA_REDUCE_POS_COUNT=True
 
 def printasts(asts,name="test"):
     if DEBUG_AST_PRINTS:
@@ -222,13 +223,13 @@ def betaReduce(ast):
     return ast
             
 
-if DEBUG_FILE_WRITING_ON:
+if DEBUG_FILE_WRITING_ON or DEBUG_BETA_REDUCE_POS_COUNT:
     stepcount=0
 
 # this does all the beta reduce steps.
 # retuns the reduced ast
 def betaReduceLoop(ast):
-    if DEBUG_FILE_WRITING_ON:
+    if DEBUG_FILE_WRITING_ON or DEBUG_BETA_REDUCE_POS_COUNT:
         global stepcount
     # should check to make sure it isn't beta reducible also!
     newAst = betaReduce(ast)
@@ -237,6 +238,9 @@ def betaReduceLoop(ast):
     if DEBUG_FILE_WRITING_ON:
         with open(f"beta{stepcount}.gv",'w') as f:
             f.write(treeToDOT(ast))
+    if DEBUG_BETA_REDUCE_POS_COUNT:
+        print(f"\r{stepcount}",end="")
+    if DEBUG_FILE_WRITING_ON or DEBUG_BETA_REDUCE_POS_COUNT:        
         stepcount+=1
 
     if (ast) == newAst:

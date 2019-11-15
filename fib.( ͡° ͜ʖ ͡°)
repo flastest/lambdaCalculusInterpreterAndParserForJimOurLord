@@ -1,0 +1,26 @@
+[0=Lf.Lx.x]
+[1=Lf.Lx.f x]
+[2=Lf.Lx.f(f x)]
+[3=Lf.Lx.f(f(f x))]
+[4=Lf.Lx.f(f(f(f x)))]
+[5=Lf.Lx.f(f(f(f(f x))))]
+[++=Ln.Lf.Lx.f(n f x)]
+[+=Lm.Ln. m ++ n]
+[*=Lm.Ln. m (+ n) 0]
+[**=Lb.Le.e b]
+[--=Ln.Lf.Lx.n (Lg.Lh.h (g f))(Lu.x)(Lu.u)]
+[-=Lm.Ln.n -- m]
+[pair=Llft.Lrgt.Lbool. bool lft rgt]
+[if=Lbool.Lthen.Lelse. bool then else]
+[true=Lleft.Lright.left]
+[false=Lleft.Lright.right]
+[fst=Lx.x true]
+[snd=Lx.x false]
+[fibstep=Lx.(pair (+ (fst x) (snd x)) (fst x))]
+[fib=Lx. fst (x fibstep (pair 1 0))]
+fib 0
+fib 1
+fib 2
+fib 3
+fib 4
+fib 5
