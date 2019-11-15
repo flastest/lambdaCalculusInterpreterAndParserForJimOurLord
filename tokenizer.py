@@ -161,16 +161,19 @@ class TokenStream:
         self.issue(token)            
     
     def chompComment(self):
-        self.lexassert(len(self.source)>1 and self.source[0:1] == '(*')
+        self.lexassert(len(self.source)>1 and self.source[0:2] == '(*')
         self.chompChar() # eat (*
         self.chompChar() #
-        while len(self.source) >= 2 and self.source[0:1] != '*)':        
+#       print("comment",end="")
+        while len(self.source) >= 2 and self.source[0:2] != '*)':        
             self.chomp()
+ #          print("!",end="")
         if len(self.source) < 2:
             self.raiseLex("EOF encountered within comment")
         else:
             self.chompChar() # eat *)
-            self.chompChar() #     
+            self.chompChar() #
+#       print()
 
     def chomp(self):
         if self.nxt() in WHITESPACE:
@@ -227,7 +230,7 @@ class TokenStream:
     def analyze(self):
         while self.source != '':
             # CHOMP a comment
-            if self.source[0:1] == '(*':
+            if self.source[0:2] == '(*':
                 self.chompComment()
             # CHOMP whitespace
             elif self.source[0] in WHITESPACE:

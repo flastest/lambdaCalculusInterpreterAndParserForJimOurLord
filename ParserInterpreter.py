@@ -61,6 +61,8 @@ def parseAppl(tokens):
     x = tokens.next()
     while x not in (")","eof","]","\n",""):
         time.sleep(0.1)
+        if DEBUG_COMMENTS_ON:
+            print("Appin!",x)
         e=["App",e,parseExpn(tokens)]
         x = tokens.next()
     return e
